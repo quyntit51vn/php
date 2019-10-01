@@ -38,11 +38,15 @@ class Book {
         return $arrBook;
     }
 
-    // static function add($id,$price,$title,$author,$year){
-    //     $myfile = fopen("data/book.txt", "w") or die("Unable to open file!");
-    //     $data = file("data/book.txt");
-    //     $data[] = $id."#".$title."#".$price."#".$author."#".$year."\n";
-    //     fwrite($myfile, $data);
-    //     fclose($myfile);
-    // }
+    static function add($id,$price,$title,$author,$year){
+        $data = file("data/book.txt");
+        $myfile = fopen("data/book.txt", "w") or die("Unable to open file!");
+        $data[] = $id."#".$title."#".$price."#".$author."#".$year;
+        $text = "";
+        foreach($data as $key => $value){
+            $text.=$value."\n";
+        }
+        fwrite($myfile, $text);
+        fclose($myfile);
+    }
 }
