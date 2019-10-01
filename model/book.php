@@ -39,9 +39,19 @@ class Book {
     }
 
     static function add($id,$price,$title,$author,$year){
-        $myfile = fopen("data/book.txt", "a") or die("Unable to open file!");
-        $data= $id."#".$title."#".$price."#".$author."#".$year;
-        fwrite($myfile, $data."\n");
-        fclose($myfile);
+        $data = Book::getList();
+        $check = true;
+        foreach($data as $key => $value){
+            if($value->id == $id){
+                $check = false;
+            }
+        }
+        if($check){
+            $myfile = fopen("data/book.txt", "a") or die("Unable to open file!");
+            $row= $id."#".$title."#".$price."#".$author."#".$year;
+            fwrite($myfile, $row."\n");
+            fclose($myfile);
+        }
+        
     }
 }
