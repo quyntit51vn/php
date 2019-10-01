@@ -24,7 +24,7 @@ class Book {
     }
 
     static function getList($search = null){
-        $data = file("data/book.txt");
+        $data = file("data/book.txt",FILE_SKIP_EMPTY_LINES);
         $arrBook = [];
         foreach($data as $key => $value){
             $row = explode("#",$value);
@@ -33,7 +33,9 @@ class Book {
                 strlen(strstr($row[1],$search)) || strlen(strstr($row[4],$search)) ||
                 strlen(strstr($row[2],$search)) || $search == null
             )
-            $arrBook[] = new Book($row[0],$row[2],$row[1],$row[3],$row[4]);
+            if(count($row) > 1)
+                $arrBook[] = new Book($row[0],$row[2],$row[1],$row[3],$row[4]);
+            
         }
         return $arrBook;
     }
@@ -52,6 +54,23 @@ class Book {
             fwrite($myfile, $row."\n");
             fclose($myfile);
         }
-        
+    }
+
+    static function delete($id){
+        $data = Book::getList();
+        $data_res = [];
+        foreach($data as $key => $value){
+            if($value->id != $id){
+                $data_res[] = $value;
+            }
+        }
+
+        $text_write = "";
+        $myfile = fopen("data/book.txt", "w") or die("Unable to open file!");
+        foreach($data_res as $key => $value){
+            $text_write.= $value->id."#".$value->title."#".$value->price."#".$value->author."#".$value->year."\n";
+        }
+        fwrite($myfile, $text_write);
+        fclose($myfile);
     }
 }

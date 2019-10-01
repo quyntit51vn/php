@@ -9,6 +9,10 @@
             $error = 'All input required';
         }
     }
+
+    if($_REQUEST['action'] == 'delete'){
+        Book::delete($_REQUEST['id']);
+    }
     $books = Book::getList($_REQUEST['search']);
 
 ?>
