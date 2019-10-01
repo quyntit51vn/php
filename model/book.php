@@ -39,14 +39,9 @@ class Book {
     }
 
     static function add($id,$price,$title,$author,$year){
-        $data = file("data/book.txt");
-        $myfile = fopen("data/book.txt", "w") or die("Unable to open file!");
-        $data[] = $id."#".$title."#".$price."#".$author."#".$year;
-        $text = "";
-        foreach($data as $key => $value){
-            $text.=$value."\n";
-        }
-        fwrite($myfile, $text);
+        $myfile = fopen("data/book.txt", "a") or die("Unable to open file!");
+        $data= $id."#".$title."#".$price."#".$author."#".$year;
+        fwrite($myfile, $data);
         fclose($myfile);
     }
 }

@@ -3,13 +3,13 @@
     include_once('nav.php');
     include_once('model/book.php');
     $books = Book::getList($_REQUEST['search']);
-    if($_REQUEST['action'] == 'add'){
-        if($_REQUEST['id'] && $_REQUEST['title'] && $_REQUEST['price'] && $_REQUEST['author'] && $_REQUEST['year']){
-            Book::add($_REQUEST['id'],$_REQUEST['title'],$_REQUEST['price'],$_REQUEST['author'],$_REQUEST['year']);
-        }else{
-            $error = 'All input required';
-        }
-    }
+    // if($_REQUEST['action'] == 'add'){
+    //     if($_REQUEST['id'] && $_REQUEST['title'] && $_REQUEST['price'] && $_REQUEST['author'] && $_REQUEST['year']){
+    //         Book::add($_REQUEST['id'],$_REQUEST['title'],$_REQUEST['price'],$_REQUEST['author'],$_REQUEST['year']);
+    //     }else{
+    //         $error = 'All input required';
+    //     }
+    // }
 ?>
 <div class="container pt-5">
     <div class="modal" id="form-add">
