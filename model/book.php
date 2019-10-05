@@ -7,7 +7,7 @@ class Book {
     var $year;
     var $id;
     
-    public function __construct($id,$price, $title, $author, $year)
+    public function __construct($id,$title,$price,$author, $year)
     {
         $this->id = $id;
         $this->price = $price;
@@ -33,14 +33,13 @@ class Book {
                 strlen(strstr($row[1],$search)) || strlen(strstr($row[4],$search)) ||
                 strlen(strstr($row[2],$search)) || $search == null
             )
-            if(count($row) > 1)
-                $arrBook[] = new Book($row[0],$row[2],$row[1],$row[3],$row[4]);
+            $arrBook[] = new Book($row[0],$row[1],$row[2],$row[3],$row[4]);
             
         }
         return $arrBook;
     }
 
-    static function add($id,$price,$title,$author,$year){
+    static function add($id,$title,$price,$author,$year){
         $data = Book::getList();
         $check = true;
         foreach($data as $key => $value){
@@ -64,13 +63,44 @@ class Book {
                 $data_res[] = $value;
             }
         }
-
         $text_write = "";
         $myfile = fopen("data/book.txt", "w") or die("Unable to open file!");
         foreach($data_res as $key => $value){
-            $text_write.= $value->id."#".$value->title."#".$value->price."#".$value->author."#".$value->year."\n";
+            $text_write.= $value->id."#".$value->title."#".$value->price."#".$value->author."#".$value->year;
         }
         fwrite($myfile, $text_write);
         fclose($myfile);
+    }
+
+    static function edit($id,$title,$price,$author,$year){
+        $data = Book::getList();
+        $check = true;
+        $text_write = "";
+        $myfile = fopen("data/book.txt", "w") or die("Unable to open file!");
+        foreach($data as $key => $value){
+            if($value->id == $id){
+                $text_write.= $id."#".$title."#".$price."#".$author."#".$year."\n";
+            }else{
+                $text_write .= $value->id."#".$value->title."#".$value->price."#".$value->author."#".$value->year;
+            }
+        }
+        fwrite($myfile, $text_write);
+        fclose($myfile);
+    }
+
+    static function pagination($mount = 10,$page_index = 1,$search = null){
+        if($page_index <= 1) $page_index = 1;
+        $data = Book::getList($search);
+        $res = [];
+        $i = 0;
+        for($i = $mount*($page_index-1); $i < ($mount*($page_index-1) + $mount) && $i < sizeof($data); $i++){
+            $res[] = $data[$i]; 
+        }
+        $data_res = [
+            'data' => $res,
+            'size' => sizeof($data),
+            'page_index' => $page_index
+        ];
+        return $data_res;
     }
 }

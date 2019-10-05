@@ -2,20 +2,44 @@
     include_once('header.php');
     include_once('nav.php');
     include_once('model/book.php');
+    
     if($_REQUEST['action'] == 'add'){
         if($_REQUEST['id'] && $_REQUEST['title'] && $_REQUEST['price'] && $_REQUEST['author'] && $_REQUEST['year']){
             Book::add($_REQUEST['id'],$_REQUEST['title'],$_REQUEST['price'],$_REQUEST['author'],$_REQUEST['year']);
-        }else{
-            $error = 'All input required';
         }
     }
-
     if($_REQUEST['action'] == 'delete'){
         Book::delete($_REQUEST['id']);
     }
-    $books = Book::getList($_REQUEST['search']);
-
+    if($_REQUEST['action'] == 'edit'){
+        if($_REQUEST['id'] && $_REQUEST['title'] && $_REQUEST['price'] && $_REQUEST['author'] && $_REQUEST['year']){
+            Book::edit($_REQUEST['id'],$_REQUEST['title'],$_REQUEST['price'],$_REQUEST['author'],$_REQUEST['year']);
+        }
+    }
+    $mount = 5;
+    $paginationBooks = Book::pagination($mount,$_REQUEST['page'],$_REQUEST['search']);
+    $books = $paginationBooks['data'];
+    
 ?>
+<style>
+    .pagination {
+    display: inline-block;
+    }
+
+    .pagination a {
+    color: black;
+    float: left;
+    padding: 8px 16px;
+    text-decoration: none;
+    }
+
+    .pagination a.active {
+    background-color: #4CAF50;
+    color: white;
+    }
+
+    .pagination a:hover:not(.active) {background-color: #ddd;}
+</style>
 <div class="container pt-5">
     <div class="modal" id="form-add">
         <div class="modal-dialog">
@@ -93,7 +117,7 @@
                 <td><?php echo $value->author?></td>
                 <td><?php echo $value->year?></td>
                 <td>
-                    <div class="modal" id="form-edit">
+                    <div class="modal" id="form-edit-<?php echo $value->id?>">
                         <div class="modal-dialog">
                             <div class="modal-content">
                             <!-- Modal Header -->
@@ -134,7 +158,7 @@
                             </div>
                         </div>
                     </div>
-                    <button class="btn btn-outline-warning" data-toggle="modal" data-target="#form-edit"><i class="fas fa-pencil-alt"></i> Edit</button>
+                    <button class="btn btn-outline-warning" data-toggle="modal" data-target="#form-edit-<?php echo $value->id?>"><i class="fas fa-pencil-alt"></i> Edit</button>
                     <form action="" style=" display: inline-block;" method="POST">
                         <input type="hidden" name="action" value="delete"> 
                         <input type="hidden" name="id" value="<?php echo $value->id?>"> 
@@ -146,14 +170,29 @@
                 }
             ?>
         </tbody>
+        
     </table>
+    <div class="pagination">   
+        <?php 
+            $url = $_SERVER['REQUEST_URI'];
+            $url = explode('?',$url)[0];
+            $url .= '?';
+            if(isset($_GET['search'])){
+                $url .= $dau.'search='.$_GET['search'].'&';
+            }
+
+            for($i = 1; $i <= ceil($paginationBooks['size']/$mount); $i++){
+                
+        ?>
+            <a <?php if($i == $paginationBooks['page_index'] ) echo "class='active'"; ?> href="<?php echo $url.'page='.$i; ?>"><?php echo $i?></a>
+        <?php
+            }
+        ?>
+    </div> 
 </div>
 <?php 
     include_once('footer.php');
 ?>
 <script>
-    $(document).ready(function () {
-        $('#form-add').hide();
-        
-    });
+    
 </script>
