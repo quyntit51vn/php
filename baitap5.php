@@ -180,9 +180,7 @@
             if(isset($_GET['search'])){
                 $url .= $dau.'search='.$_GET['search'].'&';
             }
-
             for($i = 1; $i <= ceil($paginationBooks['size']/$mount); $i++){
-                
         ?>
             <a <?php if($i == $paginationBooks['page_index'] ) echo "class='active'"; ?> href="<?php echo $url.'page='.$i; ?>"><?php echo $i?></a>
         <?php
