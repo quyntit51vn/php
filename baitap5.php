@@ -1,25 +1,31 @@
 <?php 
+    session_start();
     include_once('header.php');
     include_once('nav.php');
     include_once('model/book.php');
+    include_once('model/user.php');
+    
+    $user = unserialize($_SESSION['user']);    
     
     if($_REQUEST['action'] == 'add'){
-        if($_REQUEST['id'] && $_REQUEST['title'] && $_REQUEST['price'] && $_REQUEST['author'] && $_REQUEST['year']){
-            Book::add($_REQUEST['id'],$_REQUEST['title'],$_REQUEST['price'],$_REQUEST['author'],$_REQUEST['year']);
+        if($_REQUEST['title'] && $_REQUEST['price'] && $_REQUEST['author'] && $_REQUEST['year']){
+            $book = new Book(null,$_REQUEST['title'],$_REQUEST['price'],$_REQUEST['author'],$_REQUEST['year']);
+            Book::addFromDB($book);
         }
     }
     if($_REQUEST['action'] == 'delete'){
-        Book::delete($_REQUEST['id']);
+        Book::deleteFromDB($_REQUEST['id']);
     }
     if($_REQUEST['action'] == 'edit'){
         if($_REQUEST['id'] && $_REQUEST['title'] && $_REQUEST['price'] && $_REQUEST['author'] && $_REQUEST['year']){
-            Book::edit($_REQUEST['id'],$_REQUEST['title'],$_REQUEST['price'],$_REQUEST['author'],$_REQUEST['year']);
+            $book = new Book($_REQUEST['id'],$_REQUEST['title'],$_REQUEST['price'],$_REQUEST['author'],$_REQUEST['year']);
+            Book::updateFromDB($book);
         }
     }
     $mount = 5;
     $paginationBooks = Book::pagination($mount,$_REQUEST['page'],$_REQUEST['search']);
     $books = $paginationBooks['data'];
-    
+    // $books = Book::getListFromDB();
 ?>
 <style>
     .pagination {
@@ -41,6 +47,7 @@
     .pagination a:hover:not(.active) {background-color: #ddd;}
 </style>
 <div class="container pt-5">
+    <h1><?php echo $user->fullName; ?></h1>
     <div class="modal" id="form-add">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -55,10 +62,7 @@
             <form action="" method="POST">
                 <div class="modal-body">
                     <input type="hidden" name="action" value="add">
-                    <div class="form-group">
-                        <label>ID</label>
-                        <input class="form-control" type="text" name="id">
-                    </div>
+                    
                     <div class="form-group">
                         <label>title</label>   
                         <input class="form-control" type="text" name="title">

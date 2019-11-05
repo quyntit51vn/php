@@ -1,4 +1,7 @@
 <?php
+
+require 'db.php';
+
 class Book {
 
     var $price;
@@ -90,7 +93,7 @@ class Book {
 
     static function pagination($mount = 10,$page_index = 1,$search = null){
         if($page_index <= 1) $page_index = 1;
-        $data = Book::getList($search);
+        $data = Book::getListFromDB($search);
         $res = [];
         $i = 0;
         for($i = $mount*($page_index-1); $i < ($mount*($page_index-1) + $mount) && $i < sizeof($data); $i++){
@@ -102,5 +105,54 @@ class Book {
             'page_index' => $page_index
         ];
         return $data_res;
+    }
+
+    static function getListFromDB(){
+
+        $conn = db::connect();
+        // print_r($conn);
+        //Buoc 2: Thao tac voi CSDL: CRUD
+        $sql = "SELECT * From Book";
+        $result = $conn->query($sql);
+        $ls = [];
+        if($result->num_rows>0){
+            while($row = $result->fetch_assoc()){
+                $book = new Book($row['ID'],$row['Title'],$row['Price'],$row['Author'],$row['Year']);
+                $ls[] = $book;
+            }
+        }    
+        //Buoc 3: Dong ket noi
+        $conn->close();
+        return $ls;
+    }
+
+    static function addFromDB($book){
+        $conn = db::connect();
+        
+        $sql = "INSERT INTO `Book` (`Title`, `Price`, `Author`, `Year`) VALUES ('".$book->title."',".$book->price.",'".$book->author."',".$book->year.")";
+        $result = $conn->query($sql);
+        echo $conn->error;
+        $conn->close();
+    }
+
+    static function deleteFromDB($id){
+        $conn = db::connect();
+        $sql = "DELETE FROM `Book` WHERE `id` = ".$id;
+        $result = $conn->query($sql);
+        echo $conn->error;
+        $conn->close();
+    }
+
+    static function updateFromDB($book){
+        $conn = db::connect();
+        
+        $sql = "UPDATE `Book` SET `Title`= '".$book->title."', 
+                                    `Price` = ".$book->price.", 
+                                    `Author`='".$book->author."',
+                                    `Year` = ".$book->year." 
+                                    WHERE id = ".$book->id;
+        $result = $conn->query($sql);
+        echo $conn->error;
+        $conn->close();
     }
 }

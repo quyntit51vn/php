@@ -1,3 +1,24 @@
+<?php
+
+session_start();
+include_once('model/user.php');
+$user = null;
+$infomation;
+if($_SESSION['user']){
+  header('Location: trangchu.php');
+}
+if ($_SERVER["REQUEST_METHOD"] == 'POST') {
+  $userName = $_REQUEST['email'];
+  $password = $_REQUEST['password'];
+  $user = User::authentication($userName, $password);
+  if ($user != null) {
+    $_SESSION['user'] = serialize($user);
+    header('Location: baitap5.php');
+  } else {
+    $infomation = "Dang nhap that bap";
+  }
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -25,7 +46,7 @@
     <div class="card card-login mx-auto mt-5">
       <div class="card-header">Login</div>
       <div class="card-body">
-        <form>
+        <form action="" method="POST">
           <div class="form-group">
             <div class="form-label-group">
               <input type="email" id="inputEmail" class="form-control" name="email" placeholder="Email address" required="required" autofocus="autofocus">
@@ -34,7 +55,7 @@
           </div>
           <div class="form-group">
             <div class="form-label-group">
-              <input type="password" id="inputPassword" name="password" class="form-control" placeholder="Password" required="required">
+              <input type="password" id="inputPassword" name=" password" class="form-control" placeholder="Password" required="required">
               <label for="inputPassword">Password</label>
             </div>
           </div>
@@ -48,6 +69,12 @@
           </div>
           <button type="submit" class="btn btn-primary btn-block">Login</button>
         </form>
+        <?php if ($infomation != null) { ?>
+          <div class="alert alert-danger">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <strong>Title!</strong> <?php echo $infomation; ?>
+          </div>
+        <?php } ?>
         <div class="text-center">
           <a class="d-block small mt-3" href="register.html">Register an Account</a>
           <a class="d-block small" href="forgot-password.html">Forgot Password?</a>
